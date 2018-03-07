@@ -15,7 +15,7 @@
            [org.deeplearning4j.nn.conf 
             NeuralNetConfiguration$Builder
             GradientNormalization
-            LearningRatePolicy]
+            BackpropType]
            [org.deeplearning4j.nn.api OptimizationAlgorithm]
            [org.deeplearning4j.nn.weights WeightInit]
            [org.deeplearning4j.nn.conf Updater]
@@ -25,15 +25,11 @@
            [org.deeplearning4j.nn.multilayer MultiLayerNetwork]
            [org.deeplearning4j.util ModelSerializer]
            [org.deeplearning4j.eval Evaluation RegressionEvaluation]
-           [org.deeplearning4j.nn.conf 
-            BackpropType
-            LearningRatePolicy]
            [org.deeplearning4j.nn.conf.layers 
             SubsamplingLayer$Builder 
             SubsamplingLayer$PoolingType
             ConvolutionLayer$Builder
             RnnOutputLayer$Builder
-            RBM$Builder
             GravesLSTM$Builder
             OutputLayer$Builder
             DenseLayer$Builder
@@ -109,7 +105,8 @@
     split-config))
 
 (def options
-  {:sgd (OptimizationAlgorithm/STOCHASTIC_GRADIENT_DESCENT)
+  {:adam (Updater/ADAM)
+   :sgd (OptimizationAlgorithm/STOCHASTIC_GRADIENT_DESCENT)
    :tanh (Activation/TANH)
    :identity (Activation/IDENTITY)
    :mse (LossFunctions$LossFunction/MSE)
@@ -122,12 +119,10 @@
    :rmsprop (Updater/RMSPROP)
    :mcxent (LossFunctions$LossFunction/MCXENT)
    :truncated-bptt (BackpropType/TruncatedBPTT)
-   :learning-rate-policy-schedule (LearningRatePolicy/Schedule)
    :nesterovs (Updater/NESTEROVS)
    :pooling-type-max (SubsamplingLayer$PoolingType/MAX)
    :distribution (WeightInit/DISTRIBUTION)
-   :renormalize-l2-per-layer (GradientNormalization/RenormalizeL2PerLayer)
-   :step (LearningRatePolicy/Step)})
+   :renormalize-l2-per-layer (GradientNormalization/RenormalizeL2PerLayer)})
 
 (defn get-option [arg]
   (let [option (get options arg)]
@@ -156,7 +151,6 @@
 
 (def layer-builders
   {:dense (fn [] (DenseLayer$Builder.))
-   :rbm (fn [] (RBM$Builder.))
    :graves-lstm (fn [] (GravesLSTM$Builder.))
    :output (fn [loss-fn] (OutputLayer$Builder. loss-fn))
    :rnn-output (fn [loss-fn] (RnnOutputLayer$Builder. loss-fn))
